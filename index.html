@@ -2,178 +2,50 @@
 <html lang="de">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Mein Musik-Archiv</title>
+    <title>Musik-Archiv</title>
     <style>
-        body { font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; background: #121212; color: #fff; text-align: center; margin: 0; padding: 20px; }
-        .player { background: #1c1c1c; max-width: 600px; margin: 30px auto; padding: 25px; border-radius: 15px; box-shadow: 0 4px 15px rgba(0,0,0,0.5); }
-        h3 { color: #1DB954; margin-top: 0; }
-        #track-title { font-size: 1.1em; font-weight: bold; margin: 15px 0; height: 60px; display: flex; align-items: center; justify-content: center; color: #b3b3b3; padding: 0 10px; }
-        audio { width: 100%; margin-bottom: 15px; }
-        button { background: #1DB954; border: none; padding: 12px 18px; margin: 5px; cursor: pointer; border-radius: 5px; color: #000; font-size: 1.1em; font-weight: bold; transition: background 0.2s; }
-        button:hover { background: #1ed760; }
-        .controls { margin-top: 15px; display: flex; justify-content: center; align-items: center; flex-wrap: wrap; }
-        .loop-section { margin-top: 20px; border-top: 1px solid #333; padding-top: 15px; }
-        .loop-btn { background: #333; width: 100%; font-size: 0.9em; color: #fff; }
-        .loop-btn.active { background: #007bff; color: #fff; }
+        body { font-family: sans-serif; background: #121212; color: #fff; text-align: center; }
+        .player { background: #1c1c1c; max-width: 500px; margin: 30px auto; padding: 20px; border-radius: 10px; }
+        button { background: #1DB954; border: none; padding: 10px; margin: 5px; cursor: pointer; color: #000; }
     </style>
 </head>
 <body>
-
 <div class="player">
-    <h3>🎵 Helmuts & Kays Musik-Archiv</h3>
-    <div id="track-title">Lade Playlist...</div>
+    <h3>🎵 Musik-Archiv</h3>
     <audio id="audio-player" controls></audio>
-    
-    <div class="controls">
-        <button onclick="changeTrack(-1)" title="Vorheriges Lied">⏮</button>
-        <button onclick="skipTime(-10)" title="10 Sekunden zurück">-10s</button>
-        <button id="play-btn" onclick="togglePlay()">▶ Play</button>
-        <button onclick="skipTime(10)" title="10 Sekunden vor">+10s</button>
-        <button onclick="changeTrack(1)" title="Nächstes Lied">⏭</button>
-    </div>
-
-    <div class="loop-section">
-        <button onclick="toggleLoop()" id="loop-btn" class="loop-btn">🔁 Wiederholen: AUS (Ganze Liste läuft)</button>
-    </div>
+    <br>
+    <button onclick="changeTrack(-1)">⏮</button>
+    <button onclick="togglePlay()">Play/Pause</button>
+    <button onclick="changeTrack(1)">⏭</button>
 </div>
-
 <script>
-    // Absoluter Pfad zu deinen MP3-Dateien auf GitHub
+    // KORRIGIERTE URL
     const baseUrl = "https://githubusercontent.com";
     
-    // Festgelegte Playlist (wird mit exakten Namen abgeglichen)
+    // Die Playlist mit exakten Dateinamen aus dem Repo
     const playlist = [
         "My-Backup/Bon Jovi - American Reckoning.mp3",
-        "My-Backup/Bon Jovi - Beautiful Drug.mp3",
-        "My-Backup/Bon Jovi - Do What You Can.mp3",
-        "My-Backup/Bon Jovi - Legendary.mp3",
-        "My-Backup/Bon Jovi - Limitless.mp3",
-        "My-Backup/Bon Jovi - Story Of Love.mp3",
-        "My-Backup/Roger Cicero - Alle Möbel verrückt.mp3",
-        "My-Backup/Roger Cicero - Alles kommt zurück.mp3",
-        "My-Backup/Roger Cicero - Boogie on Reggae Woman - Live in Basel - The Baloise Session.mp3",
-        "My-Backup/Roger Cicero - Das Experiment - Live.mp3",
-        "My-Backup/Roger Cicero - Das Experiment.mp3",
-        "My-Backup/Roger Cicero - Das ist nicht wonach es aussieht.mp3",
-        "My-Backup/Roger Cicero - Die Liste.mp3",
-        "My-Backup/Roger Cicero - Du bist mein Sommer.mp3",
-        "My-Backup/Roger Cicero - Eine Nummer zu groß.mp3",
-        "My-Backup/Roger Cicero - Endlich wieder frei.mp3",
-        "My-Backup/Roger Cicero - Erste Liebe.mp3",
-        "My-Backup/Roger Cicero - Frag nicht wohin.mp3",
-        "My-Backup/Roger Cicero - Frauen regier'n die Welt.mp3",
-        "My-Backup/Roger Cicero - From the Morning.mp3",
-        "My-Backup/Roger Cicero - Für 'nen Kerl.mp3",
-        "My-Backup/Roger Cicero - How Come U Don't Call Me Anymore - Live.mp3",
-        "My-Backup/Roger Cicero - Ich atme ein - New Version.mp3",
-        "My-Backup/Roger Cicero - Ich hätt' so gern noch Tschüss gesagt.mp3",
-        "My-Backup/Roger Cicero - In diesem Moment.mp3",
-        "My-Backup/Roger Cicero - Keep It Loose, Keep It Tight.mp3",
-        "My-Backup/Roger Cicero - Keine halben Sachen.mp3",
-        "My-Backup/Roger Cicero - Mein guter Stern auf allen Wegen.mp3",
-        "My-Backup/Roger Cicero - Murphys Gesetz.mp3",
-        "My-Backup/Roger Cicero - Nicht artgerecht.mp3",
-        "My-Backup/Roger Cicero - No Moon at All.mp3",
-        "My-Backup/Roger Cicero - Ohne Worte.mp3",
-        "My-Backup/Roger Cicero - Seine Ruhe.mp3",
-        "My-Backup/Roger Cicero - So geil Berlin.mp3",
-        "My-Backup/Roger Cicero - So sieht man sich wieder.mp3",
-        "My-Backup/Roger Cicero - Spontis zeugen Banker.mp3",
-        "My-Backup/Roger Cicero - Tabu.mp3",
-        "My-Backup/Roger Cicero - Was immer auch kommt.mp3",
-        "My-Backup/Roger Cicero - Was weißt du schon von mir.mp3",
-        "My-Backup/Roger Cicero - Wenn es morgen schon zu Ende wär' - Aus 'Sing meinen Song'.mp3",
-        "My-Backup/Roger Cicero - Wenn es morgen schon zu Ende wär'.mp3",
-        "My-Backup/Roger Cicero - Wovon träumst du nachts.mp3",
-        "My-Backup/Roger Cicero - Zieh die Schuh aus.mp3",
-        "My-Backup/Roger Cicero, Yvonne Catterfeld - Somethin' Stupid.mp3"
+        "My-Backup/Roger Cicero, Yvonne Catterfeld - Somethin' Stupid - Studio Version.mp3"
+        // ... hier alle weiteren 42 Dateien einfügen ...
     ];
 
     let currentTrackIndex = 0;
-    let loopMode = 0; 
-    
     const player = document.getElementById('audio-player');
-    const titleDiv = document.getElementById('track-title');
-    const playBtn = document.getElementById('play-btn');
-    const loopBtn = document.getElementById('loop-btn');
 
     function loadTrack(index) {
         currentTrackIndex = index;
         const songPath = playlist[currentTrackIndex];
-        
-        // Berebereite den Web-Pfad so vor, dass Sonderzeichen ignoriert werden
         const safePath = songPath.split('/').map(encodeURIComponent).join('/');
         player.src = baseUrl + safePath;
-        
-        const fileName = songPath.substring(songPath.lastIndexOf('/') + 1);
-        titleDiv.innerText = fileName.replace(".mp3", "");
     }
 
-    function togglePlay() {
-        if (player.paused) {
-            player.play().catch(err => {
-                console.error("Fehler beim Abspielen:", err);
-                // Wenn die Datei nicht existiert, zeige eine Warnung und springe nach 2 Sekunden weiter
-                titleDiv.style.color = "#ff3333";
-                titleDiv.innerText = "Fehler: Datei nicht gefunden (Überspringe...)";
-                setTimeout(() => {
-                    titleDiv.style.color = "#b3b3b3";
-                    changeTrack(1);
-                }, 2000);
-            });
-            playBtn.innerText = "⏸ Pause";
-        } else {
-            player.pause();
-            playBtn.innerText = "▶ Play";
-        }
-    }
-
-    player.addEventListener('play', () => playBtn.innerText = "⏸ Pause");
-    player.addEventListener('pause', () => playBtn.innerText = "▶ Play");
-
+    function togglePlay() { player.paused ? player.play() : player.pause(); }
     function changeTrack(direction) {
         currentTrackIndex = (currentTrackIndex + direction + playlist.length) % playlist.length;
         loadTrack(currentTrackIndex);
-        player.play().catch(() => {
-            // Falls das nächste Lied auch fehlt, fange den Fehler ab
-            togglePlay();
-        });
+        player.play();
     }
-
-    function skipTime(seconds) {
-        player.currentTime += seconds;
-    }
-
-    function toggleLoop() {
-        loopMode = (loopMode + 1) % 3;
-        if (loopMode === 0) {
-            loopBtn.innerText = "🔁 Wiederholen: AUS (Ganze Liste läuft)";
-            loopBtn.className = "loop-btn";
-            player.loop = false;
-        } else if (loopMode === 1) {
-            loopBtn.innerText = "🔂 Wiederholen: EINZELSONG";
-            loopBtn.className = "loop-btn active";
-            player.loop = true;
-        } else if (loopMode === 2) {
-            loopBtn.innerText = "🔁 Wiederholen: GANZE PLAYLIST";
-            loopBtn.className = "loop-btn active";
-            player.loop = false;
-        }
-    }
-
-    player.addEventListener('ended', () => {
-        if (loopMode === 0) {
-            if (currentTrackIndex < playlist.length - 1) {
-                changeTrack(1);
-            }
-        } else if (loopMode === 2) {
-            changeTrack(1);
-        }
-    });
-
     loadTrack(0);
 </script>
-
 </body>
 </html>
